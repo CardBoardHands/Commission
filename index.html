@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EE Commission Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 1em; }
+    label { display: block; margin-top: 1em; }
+    input[type="number"] { width: 100%; padding: 0.5em; margin-top: 0.5em; }
+    button { margin-top: 1em; padding: 0.75em 1.5em; cursor: pointer; }
+    .results { margin-top: 1em; }
+    .results p { margin: 0.5em 0; }
+  </style>
+</head>
+<body>
+  <h1>EE Commission Calculator</h1>
+
+  <label for="annualTarget">Last Year's EE (Annual Target):</label>
+  <input type="number" id="annualTarget" placeholder="e.g., 100000" />
+
+  <label>Expected Revenue per Quarter:</label>
+  <input type="number" id="q1" placeholder="Q1" />
+  <input type="number" id="q2" placeholder="Q2" />
+  <input type="number" id="q3" placeholder="Q3" />
+  <input type="number" id="q4" placeholder="Q4" />
+
+  <button id="calculate">Calculate Commission</button>
+
+  <div class="results" id="results"></div>
+
+  <script>
+    // Commission rate lookup based on EE achievement %
+    function getEERate(achievement) {
+      if (achievement < 40) return 0;
+      if (achievement < 50) return 0.005;
+      if (achievement < 60) return 0.006;
+      if (achievement < 70) return 0.008;
+      if (achievement < 80) return 0.01;
+      if (achievement < 90) return 0.0125;
+      if (achievement <= 100) return 0.015;
+      return 0.015; // >100% uses top rate
+    }
+
+    document.getElementById("calculate").addEventListener("click", () => {
+      const annual = parseFloat(document.getElementById("annualTarget").value) || 0;
+      const quarters = ["q1", "q2", "q3", "q4"].map(id => parseFloat(document.getElementById(id).value) || 0);
+      let totalCommission = 0;
+      let resultsHTML = "";
+
+      quarters.forEach((rev, idx) => {
+        const achievement = annual > 0 ? (rev / annual) * 100 : 0;
+        const rate = getEERate(achievement);
+        const commission = rev * rate;
+        totalCommission += commission;
+        resultsHTML += `<p>Q${idx+1}: Revenue = $${rev.toFixed(2)}, Achievement = ${achievement.toFixed(2)}%, Rate = ${(rate*100).toFixed(2)}%, Commission = $${commission.toFixed(2)}</p>`;
+      });
+
+      resultsHTML += `<hr><p><strong>Total Commission: $${totalCommission.toFixed(2)}</strong></p>`;
+      document.getElementById("results").innerHTML = resultsHTML;
+    });
+  </script>
+</body>
+</html>
