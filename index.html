@@ -9,17 +9,20 @@
     label { display: block; margin-top: 1em; }
     input[type="number"] { width: 100%; padding: 0.5em; margin-top: 0.5em; }
     button { margin-top: 1em; padding: 0.75em 1.5em; cursor: pointer; }
-    .results { margin-top: 1em; }
+    .results { margin-top: 1.5em; }
     .results p { margin: 0.5em 0; }
   </style>
 </head>
 <body>
   <h1>EE Commission Calculator</h1>
 
-  <label for="annualTarget">Last Year's EE (Annual Target):</label>
-  <input type="number" id="annualTarget" placeholder="e.g., 100000" />
+  <label for="lastYearEE">Last Year's EE Revenue:</label>
+  <input type="number" id="lastYearEE" placeholder="e.g., 100000" />
 
-  <label>Expected Revenue per Quarter:</label>
+  <label for="eeTarget">This Year's EE Target:</label>
+  <input type="number" id="eeTarget" placeholder="e.g., 120000" />
+
+  <label>Expected Revenue per Quarter (This Year):</label>
   <input type="number" id="q1" placeholder="Q1" />
   <input type="number" id="q2" placeholder="Q2" />
   <input type="number" id="q3" placeholder="Q3" />
@@ -30,7 +33,7 @@
   <div class="results" id="results"></div>
 
   <script>
-    // Commission rate lookup based on EE achievement %
+    // EE commission rate lookup based on achievement %
     function getEERate(achievement) {
       if (achievement < 40) return 0;
       if (achievement < 50) return 0.005;
@@ -43,13 +46,14 @@
     }
 
     document.getElementById("calculate").addEventListener("click", () => {
-      const annual = parseFloat(document.getElementById("annualTarget").value) || 0;
+      const lastYear = parseFloat(document.getElementById("lastYearEE").value) || 0;
+      const target = parseFloat(document.getElementById("eeTarget").value) || 0;
       const quarters = ["q1", "q2", "q3", "q4"].map(id => parseFloat(document.getElementById(id).value) || 0);
       let totalCommission = 0;
       let resultsHTML = "";
 
       quarters.forEach((rev, idx) => {
-        const achievement = annual > 0 ? (rev / annual) * 100 : 0;
+        const achievement = target > 0 ? (rev / target) * 100 : 0;
         const rate = getEERate(achievement);
         const commission = rev * rate;
         totalCommission += commission;
